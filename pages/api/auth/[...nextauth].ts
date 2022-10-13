@@ -1,5 +1,5 @@
 import NextAuth from 'next-auth'
-import { JWT } from 'next-auth/jwt'
+// import { JWT } from 'next-auth/jwt'
 import GoogleProvider from 'next-auth/providers/google'
 
 /**
@@ -62,23 +62,22 @@ export default NextAuth({
             scope: 'openid email profile https://www.googleapis.com/auth/spreadsheets'
           }
         },
-      
-       
-      
     })
   ],
   callbacks: {
     async jwt({ token, user, account }) {
+      console.log(JSON.stringify(token,null,2));
       // Initial sign in
       if (account && user) {
+        
         return {
           accessToken: account.access_token,
-          accessTokenExpires: Date.now() + account.expires_in * 1000,
+          accessTokenExpires: Date.now() + (account.expires_at || 1) * 1000,
           refreshToken: account.refresh_token,
           user
         }
       }
-
+      
       // Return previous token if the access token has not expired yet
       if (Date.now() < token.accessTokenExpires) {
         return token
